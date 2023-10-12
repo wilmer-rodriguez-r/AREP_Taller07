@@ -146,9 +146,9 @@ public class SecureURLReader {
             return System.getenv("URLMACHINE");
         }
         //local
-        //return "https://localhost:5001/";
+        return "https://localhost:5001/";
         //aws
-        return "https://ec2-54-221-129-200.compute-1.amazonaws.com:5001/";
+        //return "https://ec2-54-221-129-200.compute-1.amazonaws.com:5001/";
     }
 
 }
