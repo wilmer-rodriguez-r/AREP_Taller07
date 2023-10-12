@@ -148,7 +148,7 @@ public class SecureURLReader {
         //local
         //return "https://localhost:5001/";
         //aws
-        return "https://54.221.129.200:5001/";
+        return "https://ec2-54-221-129-200.compute-1.amazonaws.com:5001/";
     }
 
 }
