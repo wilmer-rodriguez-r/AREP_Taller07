@@ -28,7 +28,7 @@ public class SecureURLReader {
      * Método que configura el SSL context y lee la url.
      * @param endpoint el endpoint a consultar de manera externa.
      * @return String con el contenido de la respuesta.
-     * @throws Exception Cuando el certificado no es valido.
+     * @throws Exception Cuando el certificado no es válido.
      */
     public String readURL(String endpoint) throws Exception {
         // Create a file and a password representation
@@ -105,7 +105,7 @@ public class SecureURLReader {
         //local
         //return "https://localhost:5001/";
         //aws
-        return "https://ec2-54-221-129-200.compute-1.amazonaws.com:5001/";
+        return "https://172.31.19.149:5001/";
     }
 
 }
