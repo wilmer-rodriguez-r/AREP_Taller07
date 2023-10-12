@@ -24,7 +24,7 @@ mvn package
 ```
 Lo anterior fue para traer dependencias y demás que puedan ser necesarios para el proyecto, después de esto ejecutamos el siguiente comando para poder correr el servidor.
 ```
-java -cp "target/classes;target/dependency/*" org.example.SecureSpark
+java -cp "target/classes;target/dependency/*" org.example.Login.SecureLogin
 ```
 Eso hará que ya estén en ejecución el servidor. Para corroborar esto puedes entrar al siguiente enlace donde está predeterminado el [servidor web](http://localhost:4567/index) o en caso contrario ingresa la siguiente url en tu navegador http://localhost:4567/index.
 
