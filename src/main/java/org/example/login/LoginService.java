@@ -1,4 +1,4 @@
-package org.example.Login;
+package org.example.login;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.HashMap;

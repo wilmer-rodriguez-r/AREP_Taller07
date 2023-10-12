@@ -14,7 +14,9 @@ app = (function(api){
     }
 
     let _replaceHtml = function() {
-        location.replace('https://localhost:5000/services.html');
+        //local
+        //location.replace('https://localhost:5000/services.html');
+        location.replace('https://ec2-54-165-150-250.compute-1.amazonaws.com:5000/services.html');
     }
 
     _publicFunctions.hello = function() {
