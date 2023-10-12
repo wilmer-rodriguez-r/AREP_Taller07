@@ -3,6 +3,8 @@ package org.example.login;
 
 import org.json.JSONObject;
 
+import javax.swing.*;
+
 import static spark.Spark.*;
 
 /**
@@ -30,9 +32,12 @@ public class SecureLogin {
         post("/login", (req, res) -> {
             JSONObject json = new JSONObject(req.body());
             try {
-                loginService.checkPassword(json.getString("username"), json.getString("password"));
+                boolean check = loginService.checkPassword(json.getString("username"), json.getString("password"));
+                if (!check) {
+                    res.status(404);
+                }
             } catch (Exception e) {
-                res.status(404);
+                res.status(400);
             }
             return json;
         });
