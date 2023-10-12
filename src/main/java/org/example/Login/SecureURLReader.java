@@ -102,7 +102,10 @@ public class SecureURLReader {
         if (System.getenv("URLMACHINE") != null) {
             return System.getenv("URLMACHINE");
         }
-        return "https://localhost:5001/";
+        //local
+        //return "https://localhost:5001/";
+        //aws
+        return "https://ec2-54-221-129-200.compute-1.amazonaws.com:5001/";
     }
 
 }
