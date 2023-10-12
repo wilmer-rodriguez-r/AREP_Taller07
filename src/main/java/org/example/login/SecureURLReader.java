@@ -3,8 +3,18 @@ package org.example.login;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Clase que se encarga de leer la url y verificar si tiene los certificados válidos para poder acceder de manera segura
@@ -31,22 +41,28 @@ public class SecureURLReader {
      * @throws Exception Cuando el certificado no es válido.
      */
     public String readURL(String endpoint) throws Exception {
-        // Create a file and a password representation
-        File trustStoreFile = new File(getTrustKeyStore());
-        char[] trustStorePassword = getTrustPwdStore().toCharArray();
-        // Load the trust store, the default type is "pkcs12", the alternative is "jks"
-        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        trustStore.load(new FileInputStream(trustStoreFile), trustStorePassword);
-        // Get the singleton instance of the TrustManagerFactory
-        TrustManagerFactory tmf = TrustManagerFactory
-                .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        try {
+            // Create a file and a password representation
+            File trustStoreFile = new File(getTrustKeyStore());
+            char[] trustStorePassword = getTrustPwdStore().toCharArray();
+            // Load the trust store, the default type is "pkcs12", the alternative is "jks"
+            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            trustStore.load(new FileInputStream(trustStoreFile), trustStorePassword);
+            // Get the singleton instance of the TrustManagerFactory
+            TrustManagerFactory tmf = TrustManagerFactory
+                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
 
-        // Init the TrustManagerFactory using the truststore object
-        tmf.init(trustStore);
-        //Set the default global SSLContext so all the connections will use it
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, tmf.getTrustManagers(), null);
-        SSLContext.setDefault(sslContext);
+            // Init the TrustManagerFactory using the truststore object
+            tmf.init(trustStore);
+            //Set the default global SSLContext so all the connections will use it
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, tmf.getTrustManagers(), null);
+            SSLContext.setDefault(sslContext);
+        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException ex) {
+            Logger.getLogger(SecureURLReader.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         String url = getURLMachine() + endpoint;
         return getContent(url);
     }
@@ -57,19 +73,46 @@ public class SecureURLReader {
      * @return String con el contenido de la respuesta
      * @throws Exception cuando no se encuentra la url.
      */
-    public String getContent(String url) throws Exception {
-        URL site = new URL(url);
-        String result = null;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(site.openStream()))) {
-            String inputLine;
+    public String getContent(String url) throws IOException {
+        String site = url;
+        // Crea el objeto que representa una URL
+        URL siteURL = new URL(site);
+        // Crea el objeto que URLConnection
+        URLConnection urlConnection = siteURL.openConnection();
+        // Obtiene los campos del encabezado y los almacena en un estructura Map
+        Map<String, List<String>> headers = urlConnection.getHeaderFields();
+        // Obtiene una vista del mapa como conjunto de pares <K,V>
+        // para poder navegarlo
+        Set<Map.Entry<String, List<String>>> entrySet = headers.entrySet();
+        // Recorre la lista de campos e imprime los valores
+        for (Map.Entry<String, List<String>> entry : entrySet) {
+            String headerName = entry.getKey();
+        //Si el nombre es nulo, significa que es la linea de estado
+            if (headerName != null) {
+                System.out.print(headerName + ":");
+            }
+            List<String> headerValues = entry.getValue();
+            for (String value : headerValues) {
+                System.out.print(value + "\n");
+            }
+        }
+
+        System.out.println("-------message-body------");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+        try (reader) {
             while ((inputLine = reader.readLine()) != null) {
                 System.out.println(inputLine);
-                result = inputLine;
+                response.append(inputLine);
             }
         } catch (IOException x) {
-            x.printStackTrace();
+            System.err.println(x);
         }
-        return result;
+
+        return response.toString();
+
     }
 
     /**
@@ -105,7 +148,7 @@ public class SecureURLReader {
         //local
         //return "https://localhost:5001/";
         //aws
-        return "https://172.31.19.149:5001/";
+        return "https://54.221.129.200:5001/";
     }
 
 }
